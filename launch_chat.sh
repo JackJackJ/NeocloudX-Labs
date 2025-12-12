@@ -20,7 +20,7 @@ source "$VENV_DIR/bin/activate"
 
 # 2. Install Dependencies
 echo "Checking dependencies..."
-pip install --upgrade pip --break-system-packages
+pip install --upgrade pip 
 # Core requirements derived from your imports
 pip install torch torchvision torchaudio \
     gradio \
@@ -29,7 +29,7 @@ pip install torch torchvision torchaudio \
     bitsandbytes \
     accelerate \
     sentencepiece \
-    protobuf --break-system-packages
+    protobuf 
 
 # 3. Run the Python Script
 if [ -f "$SCRIPT_NAME" ]; then
