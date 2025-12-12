@@ -55,7 +55,7 @@ with gr.Blocks(title="Z-Image-Turbo") as demo:
     gr.Markdown(f"Running Z-Image Turbo (Fixed 8 Steps). Images are auto-saved to `{OUTPUT_FOLDER}/`.")
     
     with gr.Row():
-        with gr.Column():
+        with gr.Column(scale=3):
             # Inputs
             prompt_input = gr.Textbox(
                 label="Prompt", 
@@ -71,7 +71,7 @@ with gr.Blocks(title="Z-Image-Turbo") as demo:
             
             run_btn = gr.Button("Generate", variant="primary")
         
-        with gr.Column():
+        with gr.Column(scale=7):
             # Outputs
             result_image = gr.Image(label="Z-Image Generation")
             seed_output = gr.Number(label="Seed Used")
