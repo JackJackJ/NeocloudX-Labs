@@ -70,6 +70,7 @@ The included `.sh` scripts handle installation automatically. However, if you pr
 **Manual Install:**
 ```bash
 pip install torch torchvision torchaudio gradio diffusers transformers bitsandbytes accelerate sentencepiece protobuf
+```
 
 ---
 
