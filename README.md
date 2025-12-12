@@ -4,6 +4,8 @@ Welcome to the **NeocloudX Labs** repository. This project provides local, multi
 
 We provide multiple variations of the application ranging from lightweight consumer versions to enterprise-grade flagship models, as well as a standalone image generation tool.
 
+[NeocloudX Labs](https://neocloudx.com/labs)
+
 ## Quick Start
 
 1.  **Clone the Repository**
