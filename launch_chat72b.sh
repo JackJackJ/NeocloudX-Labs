@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")"
 
 VENV_DIR="venv"
-SCRIPT_NAME="neolabs-chat.py"
+SCRIPT_NAME="neolabs-chat72b.py"
 
 echo "--- NeocloudX Labs Open Chat Launcher ---"
 
