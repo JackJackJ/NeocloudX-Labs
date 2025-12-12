@@ -104,7 +104,7 @@ def format_history_for_llm(history, system_prompt):
 
 def chat_response(message, history_state, mode, custom_sys_prompt, resolution, refine_enabled):
     # 1. IMAGE GENERATION
-    if mode == "Image Generation":
+    if mode == "Image":
         target_prompt = str(message)
         
         # --- CONDITIONAL REFINEMENT ---
