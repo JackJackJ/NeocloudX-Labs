@@ -181,7 +181,7 @@ with gr.Blocks(title="NeocloudX Labs", css=custom_css, fill_height=True) as demo
             
             mode_select = gr.Radio(
                 ["Text", "Image"], 
-                value="Instruct", 
+                value="Text", 
                 label="Mode"
             )
             
