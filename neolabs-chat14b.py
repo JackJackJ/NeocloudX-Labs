@@ -73,7 +73,7 @@ def generate_image_from_prompt(prompt, resolution_str):
     
     image = pipe(
         prompt=prompt,
-        num_inference_steps=4, 
+        num_inference_steps=8, 
         guidance_scale=0.0,    
         width=width,
         height=height,
