@@ -8,7 +8,7 @@ from threading import Thread
 
 # --- CONFIGURATION ---
 IMAGE_MODEL_ID = "Tongyi-MAI/Z-Image-Turbo"
-LLM_MODEL_ID = "Qwen/Qwen2.5-72B-Instruct" 
+LLM_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct" 
 
 DEFAULT_SYSTEM_PROMPT = "You are a helpful AI assistant."
 SYSTEM_PROMPT_IMAGE = (
