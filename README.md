@@ -6,6 +6,8 @@ We provide multiple variations of the application ranging from lightweight consu
 
 [NeocloudX Labs](https://neocloudx.com/labs)
 
+![Multimodal interface with integrated chat and image generation](https://neocloudx.com/labs-screenshot.webp)
+
 ## Quick Start
 
 1.  **Clone the Repository**
