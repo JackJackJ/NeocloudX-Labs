@@ -1,10 +1,8 @@
 # NeocloudX Labs: Open Chat & Image Suites
 
-Welcome to the **NeocloudX Labs** repository. This project provides local, multimodal AI interfaces powered by **Qwen 2.5** (LLM) and **Tongyi-MAI Z-Image-Turbo** (Image Generation).
+Welcome to the [**NeocloudX Labs**](https://neocloudx.com/labs) repository. This project provides local, multimodal AI interfaces powered by **Qwen 2.5** (LLM) and **Tongyi-MAI Z-Image-Turbo** (Image Generation).
 
 We provide multiple variations of the application ranging from lightweight consumer versions to enterprise-grade flagship models, as well as a standalone image generation tool.
-
-[NeocloudX Labs](https://neocloudx.com/labs)
 
 ![Multimodal interface with integrated chat and image generation](https://neocloudx.com/labs-screenshot.webp)
 
