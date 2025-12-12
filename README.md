@@ -52,10 +52,17 @@ Choose the version that fits your available GPU VRAM. All chat models support **
 
 ### 4. Z-Image Turbo (Standalone)
 * **File:** `z-image.py`
-* **Launcher:** `launch_z_image.sh`
-* **Description:** An interface purely for image generation (no LLM). Extremely fast (8-step generation).
+* **Launcher:** `launch_z-image.sh`
+* **Description:** An interface purely for image generation (no LLM). Very fast with surprisingly great quality. (8-step generation).
 * **Hardware Requirement:** **Entry-Level**
     * **Recommended:** Any GPU with 8GB+ VRAM (RTX 3060, 2070, etc.).
+ 
+### 5. SDXL Turbo (Standalone)
+* **File:** `sdxl-turbo.py`
+* **Launcher:** `launch_sdxl-turbo.sh`
+* **Description:** An interface purely for image generation (no LLM). Extremely fast (1-step generation).
+* **Hardware Requirement:** **Entry-Level**
+    * **Recommended:** Any GPU, high end CPUs even work.
 
 ---
 
