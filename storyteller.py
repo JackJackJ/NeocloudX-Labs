@@ -10,17 +10,18 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 IMAGE_MODEL_ID = "Tongyi-MAI/Z-Image-Turbo"
 LLM_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct" 
 
-# System prompt
-SYSTEM_PROMPT_STORY = (
-    "You are a visual storyteller. I will give you a topic and a number of scenes. "
-    "You must generate a story broken down into exactly that many scenes. "
-    "For EACH scene, strictly follow this format:\n\n"
-    "SCENE_START\n"
-    "NARRATIVE: [The text that tells the story to the reader]\n"
-    "VISUAL: [A detailed physical description of the image to generate]\n"
-    "SCENE_END\n\n"
-    "Do not include any other text, introductions, or conclusions."
-)
+# Define available visual styles
+VISUAL_STYLES = [
+    "Cinematic Photography",
+    "Pixar 3D Animation",
+    "Japanese Anime",
+    "Detailed Digital Art",
+    "Comic Book Graphic Novel",
+    "Classical Oil Painting",
+    "Watercolor Illustration",
+    "Retro Sci-Fi Poster Art",
+    "Realistic Documentary Style"
+]
 
 # --- HARDWARE SETUP ---
 device = "cuda"
@@ -62,27 +63,42 @@ except Exception as e:
 
 # --- GENERATION LOGIC ---
 
-def generate_scene_data(topic, num_scenes):
-    """Uses the LLM to write the story and split it into N scenes."""
+def generate_scene_data(topic, num_scenes, visual_style):
+    """Uses the LLM to write the story, incorporating the chosen style."""
     
-    prompt = f"Topic: {topic}\nNumber of Scenes: {num_scenes}"
+    # Dynamic system prompt that includes the chosen style and instructs continuity.
+    system_prompt_dynamic = (
+        f"You are an expert visual storyteller specializing in the '{visual_style}' style. "
+        f"I will give you a topic and a number of scenes. "
+        f"You must generate a continuous, cohesive story broken down into exactly that many scenes. "
+        f"Crucially, ensure that visual elements (characters, environment details, lighting, atmosphere) remain consistent from scene to scene to build a continuous narrative flow.\n\n"
+        f"For EACH scene, strictly follow this format:\n\n"
+        f"SCENE_START\n"
+        f"NARRATIVE: [The engaging text that tells this specific part of the story to the reader.]\n"
+        f"VISUAL: [A detailed image prompt describing the scene in the '{visual_style}' style. Mention the subjects, action, environment, lighting, and specific artistic elements of the style.]\n"
+        f"SCENE_END\n\n"
+        f"Do not include any other text, introductions, or conclusions. Output exactly {num_scenes} blocks."
+    )
+    
+    user_prompt = f"Topic: {topic}\nNumber of Scenes: {num_scenes}"
     
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT_STORY},
-        {"role": "user", "content": prompt}
+        {"role": "system", "content": system_prompt_dynamic},
+        {"role": "user", "content": user_prompt}
     ]
     
     text_input = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     model_inputs = tokenizer([text_input], return_tensors="pt").to(llm_model.device)
     
-    print(f"Generating Story Logic for '{topic}' ({num_scenes} scenes)...")
+    print(f"Generating Story Logic for '{topic}' ({num_scenes} scenes, Style: {visual_style})...")
     
     with torch.no_grad():
         gen_ids = llm_model.generate(
             **model_inputs, 
-            max_new_tokens=2048,
-            temperature=0.8,
-            top_p=0.9
+            max_new_tokens=3072, # Increased tokens slightly for more detailed style descriptions
+            temperature=0.7, # Slightly lower temperature for better adherence to structure
+            top_p=0.9,
+            repetition_penalty=1.05
         )
         output_text = tokenizer.decode(gen_ids[0][len(model_inputs.input_ids[0]):], skip_special_tokens=True)
 
@@ -100,9 +116,10 @@ def generate_scene_data(topic, num_scenes):
             visual_part = raw.split("VISUAL:")[1].split("SCENE_END")[0].strip()
             scenes.append({"narrative": narrative_part, "visual": visual_part})
         except IndexError:
+            print(f"Warning: Could not parse a scene block correctly. Skipping chunk.")
             continue
             
-    return scenes[:int(num_scenes)] # Ensure we don't return more than requested
+    return scenes[:int(num_scenes)] 
 
 def generate_image(prompt, width=1024, height=1024):
     """Helper to generate a single image."""
@@ -120,22 +137,22 @@ def generate_image(prompt, width=1024, height=1024):
     
     return image
 
-def process_story(topic, num_scenes, progress=gr.Progress()):
+def process_story(topic, num_scenes, visual_style, progress=gr.Progress()):
     """Main workflow: Generate Story -> Loop Scenes -> Generate Images -> Output Gallery."""
     
     if not topic:
         return None, "Please enter a topic."
 
-    progress(0.1, desc="Writing Story...")
+    progress(0.1, desc=f"Writing Story ({visual_style})...")
     
     # 1. Generate Text Scenarios
-    scenes = generate_scene_data(topic, num_scenes)
+    scenes = generate_scene_data(topic, num_scenes, visual_style)
     
-    if not scenes:
-        return None, "Error: LLM failed to format the story correctly. Please try again."
+    if not scenes or len(scenes) < 1:
+        return None, "Error: LLM failed to format the story correctly. Please try again or try a different topic."
 
     gallery_results = []
-    log_output = f"## Generated Story: {topic}\n\n"
+    log_output = f"## Generated Story: {topic}\n### Style: {visual_style}\n\n"
     
     # 2. Loop through scenes and generate images
     total = len(scenes)
@@ -146,7 +163,7 @@ def process_story(topic, num_scenes, progress=gr.Progress()):
         visual_prompt = scene["visual"]
         
         # Log text
-        log_output += f"**Scene {i+1}:** {narrative}\n*Prompt: {visual_prompt}*\n---\n"
+        log_output += f"**Scene {i+1} Narrative:** {narrative}\n**Visual Prompt:** *{visual_prompt}*\n---\n"
         
         # Generate Image
         try:
@@ -154,7 +171,8 @@ def process_story(topic, num_scenes, progress=gr.Progress()):
             # Gallery expects list of tuples: (image, caption)
             gallery_results.append((img, narrative)) 
         except Exception as e:
-            print(f"Error on scene {i}: {e}")
+            print(f"Error generating image for scene {i+1}: {e}")
+            log_output += f"\n*Error generating image for Scene {i+1}*\n"
 
     progress(1.0, desc="Done!")
     return gallery_results, log_output
@@ -165,18 +183,25 @@ custom_css = """
 .caption-label { font-size: 1.1em; font-weight: bold; }
 """
 
-with gr.Blocks(title="NeocloudX Labs Storyteller", css=custom_css) as demo:
-    gr.Markdown("# NeocloudX Labs Storyteller")
-    gr.Markdown("Enter a topic, choose the number of scenes, and watch a visual narrative.")
+with gr.Blocks(title="NeocloudX Labs Storyteller", css=custom_css, theme=gr.themes.Soft()) as demo:
+    gr.Markdown("# 📖 NeocloudX Labs Storyteller")
+    gr.Markdown("Enter a topic, choose a visual style, and watch the model generate a narrated slideshow.")
     
     with gr.Row():
-        with gr.Column(scale=1, min_width=300):
+        with gr.Column(scale=1, min_width=350):
             topic_input = gr.Textbox(
                 label="Story Topic / Prompt", 
-                placeholder="e.g., A robot discovering a flower in a wasteland...",
-                lines=3
+                placeholder="e.g., A lone astronaut discovering an ancient ruin on Mars...",
+                lines=4
             )
             
+            style_select = gr.Dropdown(
+                choices=VISUAL_STYLES,
+                value=VISUAL_STYLES[0],
+                label="Visual Style",
+                interactive=True
+            )
+
             scene_slider = gr.Slider(
                 minimum=3, 
                 maximum=10, 
@@ -188,7 +213,7 @@ with gr.Blocks(title="NeocloudX Labs Storyteller", css=custom_css) as demo:
             generate_btn = gr.Button("Generate Slideshow", variant="primary", size="lg")
             
             # Log area to see what the LLM actually wrote vs the prompt
-            log_area = gr.Markdown("### Story Log")
+            log_area = gr.Markdown("### Story Generation Log", elem_classes=["log-container"])
             
         with gr.Column(scale=3):
             # Gallery component allows scrolling through images with captions
@@ -199,14 +224,21 @@ with gr.Blocks(title="NeocloudX Labs Storyteller", css=custom_css) as demo:
                 columns=[1], 
                 rows=[1],
                 object_fit="contain",
-                height="auto"
+                height="auto",
+                preview=True
             )
 
     generate_btn.click(
         fn=process_story,
-        inputs=[topic_input, scene_slider],
+        inputs=[topic_input, scene_slider, style_select],
         outputs=[gallery, log_area]
     )
 
 if __name__ == "__main__":
-    demo.queue().launch(server_name="0.0.0.0", share=True, server_port=7860)
+    # Increased timeout for slower GPUs generating many images
+    demo.queue(default_concurrency_limit=1).launch(
+        server_name="0.0.0.0", 
+        share=True, 
+        server_port=7860,
+        prevent_thread_lock=True
+    )
