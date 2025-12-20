@@ -208,16 +208,32 @@ def process_story(topic, num_scenes, dropdown_style, custom_style, progress=gr.P
     return gallery_results, log_output
 
 # --- UI ---
-custom_css = custom_css = """
-/* Wrap the text inside the gallery captions */
+custom_css = """
+/* 1. Wrap the text and center it */
 .caption-label {
     white-space: pre-wrap !important;
     overflow-wrap: break-word !important;
     text-align: center;
     line-height: 1.5;
+    
+    /* 2. Create a nice translucent box for readability */
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    color: white !important;
+    border-radius: 8px;
+    padding: 10px 15px !important;
+    margin: 0 auto;
+    
+    /* 3. Position it so it doesn't overlap the bottom thumbnails */
+    /* This pushes the caption UP away from the thumbnail strip */
+    margin-bottom: 60px !important; 
+    
+    /* 4. Ensure it floats above the image but below modal controls if needed */
+    position: relative;
+    z-index: 1000;
+    max-width: 90%;
 }
 
-/* Force specific Gradio gallery captions to wrap */
+/* Force specific Gradio gallery captions to behave */
 #gallery_container span.caption, 
 #gallery_container .caption {
     white-space: pre-wrap !important;
