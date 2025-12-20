@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 # --- CONFIGURATION ---
 IMAGE_MODEL_ID = "Tongyi-MAI/Z-Image-Turbo"
-LLM_MODEL_ID = "Qwen/Qwen3-30B-A3B-Instruct-2507" 
+LLM_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct" 
 
 # System prompt
 SYSTEM_PROMPT_STORY = (
