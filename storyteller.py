@@ -239,6 +239,5 @@ if __name__ == "__main__":
     demo.queue(default_concurrency_limit=1).launch(
         server_name="0.0.0.0", 
         share=True, 
-        server_port=7860,
-        prevent_thread_lock=True
+        server_port=7860
     )
