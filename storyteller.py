@@ -208,12 +208,25 @@ def process_story(topic, num_scenes, dropdown_style, custom_style, progress=gr.P
     return gallery_results, log_output
 
 # --- UI ---
-custom_css = """
-#gallery_container { min-height: 600px; }
-.caption-label { font-size: 1.1em; font-weight: bold; }
+custom_css = custom_css = """
+/* Wrap the text inside the gallery captions */
+.caption-label {
+    white-space: pre-wrap !important;
+    overflow-wrap: break-word !important;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* Force specific Gradio gallery captions to wrap */
+#gallery_container span.caption, 
+#gallery_container .caption {
+    white-space: pre-wrap !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
 .log-container { max-height: 400px; overflow-y: scroll; }
 """
-
 with gr.Blocks(title="NeocloudX Labs Storyteller", css=custom_css, theme=gr.themes.Soft()) as demo:
     gr.Markdown("# 📖 NeocloudX Labs Storyteller")
     gr.Markdown("Enter a topic, choose a visual style, and watch the AI generate a narrated slideshow.")
