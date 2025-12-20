@@ -165,9 +165,9 @@ custom_css = """
 .caption-label { font-size: 1.1em; font-weight: bold; }
 """
 
-with gr.Blocks(title="Story Slideshow Generator", css=custom_css) as demo:
-    gr.Markdown("# 📖 AI Story Slideshow Generator")
-    gr.Markdown("Enter a topic, choose the number of scenes, and watch the AI build a visual narrative.")
+with gr.Blocks(title="NeocloudX Labs Storyteller", css=custom_css) as demo:
+    gr.Markdown("# NeocloudX Labs Storyteller")
+    gr.Markdown("Enter a topic, choose the number of scenes, and watch a visual narrative.")
     
     with gr.Row():
         with gr.Column(scale=1, min_width=300):
